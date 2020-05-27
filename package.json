@@ -1,0 +1,30 @@
+{
+  "name": "@webslate/es-detectors",
+  "version": "0.1.0",
+  "description": "Utilty Belt for ES File Code using Esprima",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/web-slate/es-detectors.git"
+  },
+  "keywords": [
+    "ES",
+    "Detectors",
+    "Parser"
+  ],
+  "author": "Venkatraman <ramsunvtech@gmail.com> (https://in.linkedin.com/in/venkatarchitect)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/web-slate/es-detectors/issues"
+  },
+  "homepage": "https://github.com/web-slate/es-detectors#readme",
+  "dependencies": {
+    "esprima": "^4.0.1"
+  },
+  "devDependencies": {
+    "jest": "^26.0.1"
+  }
+}

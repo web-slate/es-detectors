@@ -1,2 +1,4 @@
 # es-detectors
-Detect JS Files.
+Utilty Belt for ES File Code using Esprima
+
+getModuleImports - Return Imported Modules.
