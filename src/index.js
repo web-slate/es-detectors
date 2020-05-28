@@ -1,10 +1,16 @@
 const { parse } = require("esprima");
+const { 
+    IMPORT_DECLARATION,
+    IDENTIFIER,
+    IMPORT_SPECIFIER,
+    IMPORT_DEFAULT_SPECIFIER,
+ } = require('./constants');
 
 const yourCode = `
   import get from 'lodash/get';
   import PropTypes from 'prop-types';
   import React, { Fragment } from 'react';
-  import { addMessage, clearErrorMessage } from './store/actions/messager';
+  import { addMessage, clearErrorMessage } from './store/actions/message';
   import Button from '../../../ui-components/Button';
   import {
     createPayload as cPAR,
@@ -13,24 +19,6 @@ const yourCode = `
 `;
 
 const { body: parseImports } = parse(yourCode, { sourceType: "module" });
-
-const [
-  IMPORT_DECLARATION,
-
-  // Identifier.
-  IDENTIFIER,
-
-  // Specifiers.
-  IMPORT_SPECIFIER,
-  IMPORT_DEFAULT_SPECIFIER
-] = [
-  "ImportDeclaration",
-
-  "Identifier",
-
-  "ImportSpecifier",
-  "ImportDefaultSpecifier"
-];
 
 parseImports.forEach(importLine => {
   const { type, specifiers, source } = importLine;
