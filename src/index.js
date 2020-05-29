@@ -1,10 +1,10 @@
 const { parse } = require("esprima");
-const { 
-    IMPORT_DECLARATION,
-    IDENTIFIER,
-    IMPORT_SPECIFIER,
-    IMPORT_DEFAULT_SPECIFIER,
- } = require('./constants');
+const {
+  IMPORT_DECLARATION,
+  IDENTIFIER,
+  IMPORT_SPECIFIER,
+  IMPORT_DEFAULT_SPECIFIER,
+} = require('./constants');
 
 const yourCode = `
   import get from 'lodash/get';
@@ -18,7 +18,8 @@ const yourCode = `
   } from '../../../belt-utility';
 `;
 
-const { body: parseImports } = parse(yourCode, { sourceType: "module" });
+// `Detectors` Methods.
+const getParsedImports = require('./getParsedImports');
 
 parseImports.forEach(importLine => {
   const { type, specifiers, source } = importLine;
@@ -39,15 +40,22 @@ parseImports.forEach(importLine => {
 
         if (isIdentifier) {
           // @tdd: Add Your Mock question here.
-          console.log('localIdentifierName: ', localIdentifierName);
+          // console.log('localIdentifierName: ', localIdentifierName);
         }
       }
-      // if (type === 'Identifier') {
-      //   console.log('name: ', identifier.type, identifier.local);
-      // }
     });
   }
 
-  console.log('specifiers: ', specifiers);
-  console.log('source: ', source);
+  // console.log('specifiers: ', specifiers);
+  // console.log('source: ', source);
 });
+
+function detectCode () {
+  const { body: parseImports } = parse(yourCode, { sourceType: "module" });
+
+  return {
+    getRawImportInfo: getRawImportInfo(parseImports),
+  }
+}
+
+module.exports = detectCode;
