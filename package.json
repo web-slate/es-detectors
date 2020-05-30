@@ -7,7 +7,7 @@
     "node": "8.x || 9.x || 10.x || 11.x || 12.x || 13.x"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --coverage"
   },
   "repository": {
     "type": "git",
