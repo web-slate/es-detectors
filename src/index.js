@@ -1,60 +1,67 @@
-const { parse } = require("esprima");
-const {
-  IMPORT_DECLARATION,
-  IDENTIFIER,
-  IMPORT_SPECIFIER,
-  IMPORT_DEFAULT_SPECIFIER,
-} = require('./constants');
+const { parse } = require('esprima');
 
-const yourCode = `
-  import get from 'lodash/get';
-  import PropTypes from 'prop-types';
-  import React, { Fragment } from 'react';
-  import { addMessage, clearErrorMessage } from './store/actions/message';
-  import Button from '../../../ui-components/Button';
-  import {
-    createPayload as cPAR,
-    todayDate,
-  } from '../../../belt-utility';
-`;
+const {
+  isImportLine,
+  hasArrayItems,
+  isIdentifier,
+  isDefaultImportSpecifier,
+  isImportSpecifier,
+} = require('./Utilities');
 
 // `Detectors` Methods.
-const getParsedImports = require('./getParsedImports');
+const getImports = require('./getImports/index');
+const getParsedImports = require('./getParsedImports/index');
+const getRawImportInfo = require('./getRawImportInfo/index');
 
-parseImports.forEach(importLine => {
-  const { type, specifiers, source } = importLine;
-  const isImportLine = type === IMPORT_DECLARATION;
-  const isSpecifierExist = Array.isArray(specifiers) && specifiers.length > 0;
+function detectCode (source) {
+  const { body: rawImports } = parse(source, { sourceType: "module" });
+  const parsedImportList = [];
 
-  if (isImportLine && isSpecifierExist) {
-    specifiers.forEach(({ type: identifierType, local: localIdentifier }) => {
-      const isDefaultSpecifier = identifierType === IMPORT_DEFAULT_SPECIFIER;
-      const isImportSpecifier = identifierType === IMPORT_SPECIFIER;
+  rawImports.forEach(importLine => {
+    const { type, specifiers, source = {} } = importLine;
+    const isSpecifierExist = hasArrayItems(specifiers);
 
-      if (isDefaultSpecifier || isImportSpecifier) {
+    if (!source.value) {
+      return;
+    }
+
+    const parsedImport = {
+      path: source.value, // Define the Path.
+      default: '',
+      exported: []
+    };
+
+    if (isImportLine(type) && isSpecifierExist) {
+      specifiers.forEach(({ type: identifierType, local: localIdentifier }) => {
         const {
           type: localIdentifierType,
           name: localIdentifierName
         } = localIdentifier;
-        const isIdentifier = localIdentifierType === IDENTIFIER;
 
-        if (isIdentifier) {
-          // @tdd: Add Your Mock question here.
-          // console.log('localIdentifierName: ', localIdentifierName);
+        if (
+          isDefaultImportSpecifier(identifierType) &&
+          isIdentifier(localIdentifierType)
+        ) {
+          parsedImport.default = localIdentifierName;
+          return;
         }
-      }
-    });
-  }
 
-  // console.log('specifiers: ', specifiers);
-  // console.log('source: ', source);
-});
-
-function detectCode () {
-  const { body: parseImports } = parse(yourCode, { sourceType: "module" });
+        if (
+          isImportSpecifier(identifierType) &&
+          isIdentifier(localIdentifierType)
+        ) {
+          parsedImport.exported = [...parsedImport.exported, localIdentifierName];
+          return;
+        }
+      });
+    }
+  
+    parsedImportList.push(parsedImport);
+  });
 
   return {
-    getRawImportInfo: getRawImportInfo(parseImports),
+    getImports: () => getImports(parsedImportList),
+    getRawImportInfo: () => getRawImportInfo(rawImports),
   }
 }
 
